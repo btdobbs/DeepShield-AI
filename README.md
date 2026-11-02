@@ -62,6 +62,8 @@ The entire backend infrastructure for DeepShield AI is built and deployed on **R
 2. **Base64 Conversion:** Local image files are converted into base64 Data URLs directly inside the browser for secure backend transport.
 3. **Screenshot Cropping Guidance:** Interactive guidelines prompt users to trim status bars and phone borders off social media screenshots before scanning, significantly boosting detection accuracy.
 4. **Interactive Results:** Renders an animated confidence meter showing exact probability scores, classification labels, and the active scanning engine (Hive AI or Sightengine).
+
+### WEB APP: https://ai-image-detector-backend--rngari.replit.app/
 ---
 
 ## Chrome Extension Installation & Setup
@@ -119,8 +121,8 @@ To install and run the **DeepShield-AI** Chrome Extension locally on your machin
 > **Pipeline Update:** The *Technology Stack* and *How It Works* sections describe the backend architecture. Functionally, **Sightengine** now replaces Hive AI while maintaining the same request routing and score-simplification pipeline.
 
 #### Updated Known Issues / In Progress (Weeks 3–4)
-* [ ] Error handling returns a visible `!` on failure, but the underlying error message shown to the user could be clearer.
-* [ ] Accuracy testing against transformed images (*screenshots, compression, resizing*), per original weeks 7–8 plan, has not started yet.
+ Error handling returns a visible `!` on failure, but the underlying error message shown to the user could be clearer.
+      Accuracy testing against transformed images (*screenshots, compression, resizing*), per original weeks 7–8 plan, has not started yet.
 
 ---
 
@@ -136,9 +138,9 @@ To install and run the **DeepShield-AI** Chrome Extension locally on your machin
   * Raised badge layering (`z-index`) to keep badges visible over complex image containers.
 
 #### Next Steps
-* [ ] Conduct controlled accuracy testing with known real and AI-generated images (including resized, compressed, and screenshot variations).
-* [ ] Add backend support for direct image file uploads to allow checking screenshots and session-locked social media links.
-* [ ] Build a standalone web portal where users can paste URLs or drag-and-drop images to test them directly without installing the extension.
+Conduct controlled accuracy testing with known real and AI-generated images (including resized, compressed, and screenshot variations).
+Add backend support for direct image file uploads to allow checking screenshots and session-locked social media links.
+ Build a standalone web portal where users can paste URLs or drag-and-drop images to test them directly without installing the extension.
 
 ### Weeks 6-7
 
