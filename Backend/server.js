@@ -1,9 +1,9 @@
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("node:path");
 const fs = require("node:fs");
-const frontendDir = path.join(__dirname, "artifacts/deepshield/dist/public");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+const frontendDir = path.resolve(__dirname, "../Frontend/dist/public");
 
 const app = express();
 app.use(cors({ origin: "*" }));

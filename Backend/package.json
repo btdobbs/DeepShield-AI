@@ -4,18 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "typecheck:libs": "tsc --build lib/api-client-react lib/api-zod",
-    "test": "node --test",
-    "evaluate:detect": "node scripts/detection-evaluation/run.cjs"
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "sharp": "^0.35.5",
-    "typescript": "^5.9.3"
   }
 }

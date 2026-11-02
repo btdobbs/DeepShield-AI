@@ -1,0 +1,21 @@
+{
+  "name": "deepshield-ai",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.26.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "pnpm --filter @workspace/deepshield run build",
+    "start": "pnpm --filter ai-image-detector-backend run start",
+    "typecheck:libs": "tsc --build Shared/lib/api-client-react Shared/lib/api-zod",
+    "typecheck": "pnpm run typecheck:libs && pnpm --filter @workspace/deepshield run typecheck",
+    "test": "pnpm --filter ai-image-detector-backend run test",
+    "codegen": "pnpm --filter @workspace/api-spec run codegen"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "^5.9.3"
+  }
+}
