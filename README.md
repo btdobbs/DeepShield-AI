@@ -64,6 +64,32 @@ The entire backend infrastructure for DeepShield AI is built and deployed on **R
 4. **Interactive Results:** Renders an animated confidence meter showing exact probability scores, classification labels, and the active scanning engine (Hive AI or Sightengine).
 ---
 
+## Chrome Extension Installation & Setup
+
+To install and run the **DeepShield-AI** Chrome Extension locally on your machine, follow these steps:
+
+### 1. Download or Clone the Repository
+* Click the green **Code** button at the top of this GitHub repository and select **Download ZIP** (or clone the repository using Git).
+* Extract the downloaded `.zip` file to a location on your computer (e.g., `Downloads/DeepShield-AI`).
+
+### 2. Locate the Extension Folder
+* Open the extracted project directory.
+* Navigate to the **`Chrome Extension/`** folder (which contains `manifest.json`, `content.js`, `background.js`, `popup.html`, `popup.js`, and `styles.css`).
+
+### 3. Load the Extension into Google Chrome
+* Open Google Chrome and type `chrome://extensions` in the address bar.
+* In the top-right corner of the Extensions page, toggle **Developer mode** to **ON**.
+* Click the **Load unpacked** button in the top-left corner.
+* Select the **`Chrome Extension/`** folder from your local directory.
+* **DeepShield-AI** will now appear in your list of active Chrome extensions.
+
+### 4. Pin & Test on Social Media Feeds
+* Click the **Puzzle Piece icon ** in the top-right toolbar of Chrome.
+* Find **DeepShield-AI** in the dropdown menu and click the **Pin icon** to keep it accessible on your toolbar.
+* Open **Instagram**, **X (Twitter)**, or **TikTok** in Chrome and scroll through your feed.
+* Interactive **`AI?`** badges will attach to post images. Click any badge to initiate a live detection check through the Replit cloud backend!
+
+
 ## Progress Log
 
 ### Week 1–2: Extension Skeleton & Backend Wiring
