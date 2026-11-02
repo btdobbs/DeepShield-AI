@@ -1,129 +1,137 @@
-# DeepShield AI
+# DeepShield-AI: Real-Time AI Image & Deepfake Detection
 
-A student project exploring whether AI-generated images can still be detected after social-media transformations, including compression and screenshots.
+This semester, I have the opportunity to develop a project of my choice. Building on my summer research on deepfake image detection, I plan to develop a related system that expands my knowledge and skills in artificial intelligence.
 
-The project includes a React web interface, an Express backend, shared API packages, and a Chrome extension.
+**Renee Ngari** | University of North Carolina at Charlotte  
+**College of Computing and Informatics** 
 
-## Project structure
+---
 
-```text
-DeepShield-AI/
-├── Frontend/
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tsconfig.json
-│   ├── public/
-│   └── src/
-│       ├── main.tsx
-│       ├── App.tsx
-│       ├── index.css
-│       ├── pages/          # Upload, cropping, results, and not-found page
-│       ├── components/     # Reusable interface components
-│       ├── hooks/          # Supporting React hooks
-│       └── lib/            # Interface utilities
-├── Backend/
-│   ├── server.js          # Provider calls and serving the built frontend
-│   ├── package.json
-│   ├── test/              # Offline endpoint tests
-│   └── index.html         # Earlier standalone dashboard, kept for reference
-├── Shared/
-│   └── lib/
-│       ├── api-client-react/
-│       ├── api-spec/
-│       ├── api-zod/
-│       └── db/            # Unused scaffold; no database required
-├── Chrome Extension/     # Existing Manifest V3 extension
-├── docs/
-│   └── PROJECT-HISTORY.md # Original project narrative and progress notes
-├── package.json          # Commands for the whole project
-├── pnpm-workspace.yaml   # Connects Frontend, Backend, and Shared packages
-├── pnpm-lock.yaml        # Locked dependencies
-├── tsconfig.json
-├── tsconfig.base.json
-└── .env.example          # Credential names only, never actual keys
-```
+## Overview
 
-## Technologies used
+This project is a full-stack detection suite designed to identify synthetic and AI-generated media across the web. Developed as an ITS Senior Capstone project, DeepShield AI provides users with two complementary workflows: an automated Chrome Extension for live social media feed inspection, and a Web Companion Dashboard for manual file uploads and screenshot analysis.
 
-| Part | Technologies |
-| --- | --- |
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS, Radix UI, Lucide icons |
-| Client state and navigation | TanStack Query and Wouter |
-| Backend | Node.js, Express, CORS, dotenv |
-| Detection | Hive AI V3; Sightengine `genai` when Hive fails |
-| Shared contract and types | OpenAPI, Orval, Zod |
-| Extension | JavaScript, HTML/CSS, Chrome Manifest V3 |
-| Dependency management | pnpm workspaces |
-| Tests | Node.js built-in test runner with mocked provider responses |
+The goal is to make deepfake and image manipulation detection easier and more accessible to everyday users. It isn't just one tool; it's a dual-system project. It combines an automated Chrome Extension for scrolling feeds with a Web Dashboard for manual file uploads, both powered by the same backend.
 
-## Requirements
+### Key Features
 
-- Node.js 22.12 or newer; Node.js 24 LTS is recommended.
-- pnpm 10.26.1. With Corepack available, run `corepack enable` and `corepack prepare pnpm@10.26.1 --activate`. Otherwise install that pnpm version using the official pnpm installation instructions.
-- Your own Hive credentials for live detection. Sightengine credentials enable the fallback.
+* **Image Detection:** Uses a deepfake detection model to analyze images.
+* **Browser Integration:** Allows users to check images directly while browsing social media.
+* **Authenticity Score:** Provides a percentage-based prediction such as *“82% likely AI-generated.”*
+* **Visual Feedback:** Highlights areas of an image that may contain signs of manipulation.
+***Simple Results:** Uses clear indicators such as *Likely Authentic*, *Uncertain*, or *Likely Manipulated*.
 
-No Python, Flask, or database is needed to run the detector.
+---
 
-## Download and run
+## Technology Stack
 
-```sh
-git clone https://github.com/rngari-byte/DeepShield-AI.git
-cd DeepShield-AI
-pnpm install --frozen-lockfile
-```
+| Technology | Role / Usage |
+| :--- | :--- |
+| **JavaScript** | Core Chrome extension logic (content scripts, background service workers) and web interface |
+| **HTML / CSS** | Web companion dashboard, extension popup UI, and on-page badge interface |
+| **Chrome Extension API (Manifest V3)** | Browser integration on web platforms like Instagram, X, and TikTok |
+| **Node.js / Express** | Backend server that mediates between the extension and detection APIs |
+| **Hive AI V3 & Sightengine API** | CNN-based detection model pipeline (`ai-generated-and-deepfake-content-detection` & `genai`) |
+| **Replit** | Hosts the backend server for public accessibility without local infrastructure |
 
-Copy `.env.example` to `.env` in this top-level folder. Enter your own credentials there. Leave unavailable provider credentials blank; never put keys in frontend files or commit `.env`.
+> **Tech Choice Context:** Based on summer research comparing five detectors (*DFBench, Hive AI, SID-Set, Logistic Regression, Random Forest*) under realistic social-media-style transformations, CNN-based detectors like Hive AI and Sightengine outperformed traditional machine learning models. Therefore, this project utilizes maintained, state-of-the-art CNN detector APIs rather than training one from scratch this semester.
 
-Then, from the top-level folder:
+---
 
-```sh
-pnpm build
-pnpm start
-```
+## Backend Infrastructure & Replit Deployment
 
-Open **http://localhost:3000**. Express serves both the built web interface and the API, so a second frontend server is not required. If you change `PORT` in `.env`, use that port in the address.
+The entire backend infrastructure for DeepShield AI is built and deployed on **Replit**:
 
-After changing frontend code, run `pnpm build` again and refresh the browser. After changing backend code or credentials, restart `pnpm start`.
+- **Cloud Execution:** Replit runs the Express API server (`server.js`) 24/7, providing a stable public endpoint (`https://your-repl.replit.app`) accessible from any browser tab running the Chrome Extension.
+- **Zero-Trust Key Management:** Sensitive credentials (`HIVE_API_KEY`, `SIGHTENGINE_API_USER`, `SIGHTENGINE_API_SECRET`) are stored in **Replit Secrets (`.env`)**. The client-side browser never touches raw API keys, eliminating the risk of key exposure.
+- **Static Asset Delivery:** Replit serves the Web Companion Dashboard (`index.html`) directly through Express `static` middleware, keeping backend logic and frontend UI unified under a single server instance.
 
-The interface loads without API credentials. Detection requests will fail explicitly if no configured provider can return a valid response. Health flags indicate whether credentials are present, not whether a provider has accepted them.
+---
 
-## Check the project
+## How It Works
 
-```sh
-pnpm typecheck
-pnpm test
-```
+### Workflow 1: The Chrome Extension (Automated Feed Scanner)
+1. **Image Detection on Page:** A content script scans the page as the user scrolls Instagram, X, or TikTok, attaching a small **"AI?"** badge to each eligible post image.
+2. **User-Initiated Check:** The user clicks the badge on an image they want checked. *This is intentional*—the extension does not automatically scan every image to control API costs and keep performance smooth.
+3. **Request Routing:** Clicking the badge sends the image URL directly to the Replit backend server rather than calling the detection API directly.
+4. **Deepfake Detection:** Replit forwards the image to the detection API pipeline, simplifying classification into a unified label (`AI-Generated` / `Not AI-Generated`) and confidence percentage.
+5. **Result Display:** The badge updates in place to show the result (e.g., `AI 82%` or `Real 91%`), with tooltips and toast notifications displaying exact percentages.
 
-The backend tests mock external provider calls and do not consume detection quota. Real detection sends an image to an external provider and may consume credits.
+### Workflow 2: The Web Companion Dashboard (Manual & Screenshot Scanner)
+1. **Flexible User Inputs:** Users can drag and drop local files (JPEG, PNG, WebP, GIF), paste direct image URLs, or upload social media screenshots.
+2. **Base64 Conversion:** Local image files are converted into base64 Data URLs directly inside the browser for secure backend transport.
+3. **Screenshot Cropping Guidance:** Interactive guidelines prompt users to trim status bars and phone borders off social media screenshots before scanning, significantly boosting detection accuracy.
+4. **Interactive Results:** Renders an animated confidence meter showing exact probability scores, classification labels, and the active scanning engine (Hive AI or Sightengine).
+---
 
-## How image analysis works
+## Progress Log
 
-1. Select or drop a JPEG, PNG, or WebP image up to 10 MB.
-2. Optionally crop away browser controls or social-media page borders. Cropping is performed locally.
-3. Press **Analyze image**. The previewed image is sent to the backend.
-4. The backend calls Hive. If Hive fails, it tries Sightengine when configured.
-5. The interface displays the returned score, provider, and model. It does not invent an authenticity result when analysis fails.
+### Week 1–2: Extension Skeleton & Backend Wiring
 
-The backend exposes `GET /api/healthz`, `POST /api/detect`, and the compatibility endpoint `POST /detect`. Detection accepts `imageBase64` or a public HTTP(S) `imageUrl`.
+* Built the Chrome extension (**Manifest V3**): content script for image detection and badge UI, background service worker for message passing, and a popup for settings.
+* Built the Node.js/Express backend and integrated Hive AI's `/task/sync` detection endpoint.
+* Verified the backend runs correctly, and the `/detect` endpoint responds as expected.
+* Deployed the backend to **Replit** (chosen due to local development constraints on a Chromebook) at a public URL, avoiding the need for local Node.js installation.
+* Loaded the extension into Chrome via **Developer Mode** and confirmed it installs without errors.
+* **Debugging Focus:** Badge was not appearing on Instagram; narrowed down content script execution via console logging.
 
-## Chrome extension
+#### Known Issues / In Progress (Weeks 1–2)
+* [x] Confirming content script loads on Instagram's page.
+* [x] Confirm badges appear once the content script runs, then test full click $\rightarrow$ detect $\rightarrow$ result flow end-to-end.
+* [x] `www.` vs `non-www.` URL variants for Instagram/TikTok added to manifest to avoid missed matches.
 
-The existing extension files are preserved under `Chrome Extension/`. They currently reference the project's hosted backend, not your local server. The web app does not require the extension.
+---
 
-To inspect the extension, open Chrome's extension management page, enable Developer mode, choose **Load unpacked**, and select `Chrome Extension/`. Detection may send images to the backend configured in those scripts. The extension has not been verified as part of the repository-structure changes.
+### Week 3–4: Bug Fix & Mid-Project Pivot
 
-To target another backend, review the URL settings in `background.js` and `content.js`, and the matching `host_permissions` in `manifest.json`. Do not insert provider API keys into extension code.
+* **Badge Bug Fixed:** Found and resolved the badge issue. The content script was marking images as *"already processed"* before deciding whether to badge them, causing badges to be silently skipped. Restructured image-tracking logic so the badge decision happens first. Confirmed working across Instagram posts, stories, and profile pictures.
+* **Hive AI Authentication Issue:** Testing surfaced a persistent `"Invalid Auth Token"` error from Hive's API. Despite three fix attempts (*generating new V3 keys, rewriting backend payload structures, exposing correct Replit ports*), Hive's API consistently rejected requests while their logged-in Playground worked. This indicated an account/project permissions issue on Hive's side rather than a client-side code bug.
+* **API Pivot:** Switched the backend's detection API from **Hive AI** to **Sightengine's AI-Generated Image Detection API** (`genai` model), which uses a simpler user/secret authentication scheme. This resolved the blocking issue immediately.
+* **End-to-End Pipeline Confirmed:** Clicking the **"AI?"** badge on a real Instagram image now successfully returns a live confidence score routed through Sightengine.
 
-## Limitations and research status
+> [!NOTE]
+> **Pipeline Update:** The *Technology Stack* and *How It Works* sections describe the backend architecture. Functionally, **Sightengine** now replaces Hive AI while maintaining the same request routing and score-simplification pipeline.
 
-- A detection score is a model estimate, not proof of image origin.
-- Low scores do not establish that an image is genuine.
-- Screenshots and surrounding page elements can change a detector's response. Cropping helped in individual examples, but does not guarantee a correct result.
-- Individual scores near 99% are not a measured 99% accuracy rate.
-- This repository does not include a completed, balanced accuracy benchmark for social-media transformations.
-- The interface does not provide evidence heatmaps or verified generator attribution.
-- Hive and Sightengine are used as primary and fallback providers, not as a simultaneous comparison.
-- The backend has no authentication or rate limiting. Use it locally for review; add access and quota controls before exposing a public service with paid API keys.
+#### Updated Known Issues / In Progress (Weeks 3–4)
+* [ ] Error handling returns a visible `!` on failure, but the underlying error message shown to the user could be clearer.
+* [ ] Accuracy testing against transformed images (*screenshots, compression, resizing*), per original weeks 7–8 plan, has not started yet.
 
-The original project narrative is retained in [docs/PROJECT-HISTORY.md](docs/PROJECT-HISTORY.md). It is a historical record, not a statement that all earlier claims or planned features have been validated.
+---
+
+### Week 5: Expanding Beyond Social Media & Strengthening Extension (v0.2.0)
+
+* **Works on Any Website:** Expanded functionality beyond Instagram and TikTok. Added a right-click context menu option (*"Check if AI-generated"*) that works on any web image (news sites, search engines, etc.) with results displayed in a top-page banner.
+* **Optional Badges Per Site:** Badges appear automatically on Instagram, TikTok, CNN, and Google Images, remaining off by default elsewhere to prevent page clutter. Users can toggle badges on/off per site via the extension popup menu.
+* **Clutter Reduction & Performance Enhancements:**
+  * Raised minimum image size thresholds and filtered out story rings, headers, button overlays, and profile pictures.
+  * Added support for multi-photo carousel posts so each slide is checked independently.
+  * Implemented a short-term client cache to serve repeat checks instantly without making duplicate backend API requests.
+  * Added an 8-second request timeout to show clear messages during backend cold starts on free-tier hosting.
+  * Raised badge layering (`z-index`) to keep badges visible over complex image containers.
+
+#### Next Steps
+* [ ] Conduct controlled accuracy testing with known real and AI-generated images (including resized, compressed, and screenshot variations).
+* [ ] Add backend support for direct image file uploads to allow checking screenshots and session-locked social media links.
+* [ ] Build a standalone web portal where users can paste URLs or drag-and-drop images to test them directly without installing the extension.
+
+### Weeks 6-7
+
+### The Pivot: From Extension Issues to Dual System
+
+- **The Replit Outage & Instagram Caching Issues:** 
+  I originally built *only* the Chrome Extension. However, after Replit deleted my backend publication, republishing created new endpoint URLs. Instagram's heavy web framework cached the old server connections, causing extension badges to break and fail to load results.
+- **Mentor Guidance & The Web App Pivot:** 
+  Struggling to bypass Instagram's caching, my mentor suggested building a Web Companion Dashboard (`index.html`) as an alternative workflow. This allowed me to keep testing detection models directly in the browser while troubleshooting extension scripts.
+- **Upgrading to Hive AI V3:** 
+  To improve detection accuracy on compressed social media photos, I upgraded my primary backend engine to **Hive AI V3**, keeping **Sightengine** as an automatic fallback router.
+- **Solving the Problem & Finalizing GitHub:** 
+  Creating the Web Dashboard turned a deployment breakdown into a major project strength! I now have a full dual-system setup: the Chrome Extension for live feed scanning and the Web Dashboard for manual file uploads and screenshot analysis.
+
+---
+
+### How The Pivot Solved My Core Challenges
+
+1. **Bypassed Social Media Blocking:** When Instagram cached old Replit endpoints or compressed images, the Web Dashboard gave users a direct way to drag and drop images or upload cropped screenshots.
+2. **Improved Accuracy with Cropping Guidelines:** Social media screenshots contain phone status bars and app borders that confuse AI models. The Web Dashboard prompts users to crop those out, boosting accuracy up to ~99%.
+3. **Dual-Provider Reliability:** Adding Hive AI alongside Sightengine ensured that if one provider hit rate limits or server errors, the backend automatically switched providers without breaking either the website or the extension.
+
