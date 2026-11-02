@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /detect:
+    post:
+      operationId: detectImage
+      tags: [detection]
+      summary: Analyze an uploaded image using Hive with Sightengine fallback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageInput"
+      responses:
+        "200":
+          description: Actual provider detection scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionResult"
+        "400":
+          description: Invalid input
+        "502":
+          description: No provider returned a valid result
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    ImageInput:
+      type: object
+      required: [imageBase64]
+      properties:
+        imageBase64:
+          type: string
+          description: Image data URL including MIME type and base64 payload
+    DetectionResult:
+      type: object
+      required: [success, score, label, provider, model, confidence, scores, note]
+      properties:
+        success: { type: boolean }
+        score: { type: number }
+        label: { type: string }
+        provider: { type: string }
+        model: { type: string }
+        confidence: { type: number }
+        scores:
+          $ref: "#/components/schemas/DetectionScores"
+        note: { type: string }
+    DetectionScores:
+      type: object
+      required: [ai_generated, not_ai_generated]
+      properties:
+        ai_generated: { type: number }
+        not_ai_generated: { type: number }
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+        hive_ready: { type: boolean }
+        sightengine_ready: { type: boolean }
+      required:
+        - status
+
